@@ -26,4 +26,11 @@ butInstall.addEventListener('click', async () => {
 });
 
 // TODO: Add an handler for the `appinstalled` event
-window.addEventListener('appinstalled', (event) => {});
+window.addEventListener('appinstalled', (event) => {
+    // Clear the deferredPrompt so it can be garbage collected
+    deferredPrompt = null;
+    // Log the installation to your analytics provider
+    console.log('PWA was installed', event);
+    // Optionally, send analytics event to indicate successful install
+    console.log('PWA was installed');
+});
