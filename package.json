@@ -1,25 +1,25 @@
 {
   "name": "JATE",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "A progressive web application text editor.",
   "scripts": {
-    "start:dev": "",
-    "start": "",
-    "server": "",
-    "build": "",
-    "install": "",
-    "client": ""
+    "start:dev": "concurrently \"npm run server\" \"npm run client:dev\"",
+    "start": "node server/server.js",
+    "server": "cd server && npm run server",
+    "build": "npm run client:build",
+    "install": "cd client && npm install",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build"
   },
   "keywords": [],
-  "author": "",
+  "author": "Darkvanilla22",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
-    "if-env": "^1.0.4"
+    "concurrently": "^5.2.0",
+    "if-env": "^1.0.4",
+    "idb": "^6.1.3"
   },
   "devDependencies": {
-    "concurrently": "^5.2.0",
     "nodemon": "^2.0.4"
   }
 }
