@@ -20,7 +20,7 @@ module.exports = () => {
     plugins: [
       // Generate the index.html file
       new HtmlWebpackPlugin({
-        template: 'index.html',
+        template: './dist/index.html',
         filename: 'index.html',
         inject: true,
         chunks: ['main'],
