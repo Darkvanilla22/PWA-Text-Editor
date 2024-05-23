@@ -6,48 +6,47 @@ const { InjectManifest } = require('workbox-webpack-plugin');
 // TODO: Add and configure workbox plugins for a service worker and manifest file.
 // TODO: Add CSS loaders and babel to webpack.
 
-module.exports = () => {
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+
   return {
-    mode: 'development',
+    mode: isProduction ? 'production' : 'development',
     entry: {
-      main: './src/js/index.js',
-      install: './src/js/install.js'
+      main: path.resolve(__dirname, 'src/js/index.js'),
+      install: path.resolve(__dirname, 'src/js/install.js')
     },
     output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      // Generate the index.html file
       new HtmlWebpackPlugin({
-        template: './index.html',
-        filename: 'index.html',
-        inject: true,
-        chunks: ['main'],
+        template: path.resolve(__dirname, 'index.html'),
+        title: 'J.A.T.E'
       }),
-      // Generate the manifest file
+      isProduction && new InjectManifest({
+        swSrc: path.resolve(__dirname, 'src-sw.js'),
+        swDest: 'service-worker.js',
+      }),
       new WebpackPwaManifest({
-        name: 'Text Editor App',
-        short_name: 'TextEditor',
-        description: 'A progressive web application text editor.',
-        background_color: '#ffffff',
-        theme_color: '#000000',
+        fingerprints: false,
+        inject: true,
+        name: 'Just Another Text Editor',
+        short_name: 'JATE',
+        description: 'A simple text editor',
+        background_color: '#272822',
+        theme_color: '#31a9e1',
         start_url: '/',
-        display: 'standalone',
+        publicPath: '/',
         icons: [
           {
-            src: path.resolve('src/assets/icon.png'),
+            src: path.resolve(__dirname, 'src/images/logo.png'),
             sizes: [96, 128, 192, 256, 384, 512],
             destination: path.join('assets', 'icons'),
           },
         ],
       }),
-      // Inject the custom service worker
-      new InjectManifest({
-        swSrc: './src-sw.js',
-        swDest: 'service-worker.js',
-      }),
-    ],
+    ].filter(Boolean),
     module: {
       rules: [
         {
@@ -55,16 +54,23 @@ module.exports = () => {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.js$/,
-          exclude: /node_modules/,
+          test: /\.m?js$/,
+          exclude: /(node_modules|bower_components)/,
           use: {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/plugin-transform-runtime'],
             },
           },
         },
       ],
+    },
+    devServer: {
+      contentBase: path.resolve(__dirname, 'dist'),
+      compress: true,
+      port: 8080,
+      open: true,
     },
   };
 };
