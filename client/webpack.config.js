@@ -18,12 +18,52 @@ module.exports = () => {
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      
+      // Generate the index.html file
+      new HtmlWebpackPlugin({
+        template: './src/index.html',
+        filename: 'index.html',
+        inject: true,
+        chunks: ['main'],
+      }),
+      // Generate the manifest file
+      new WebpackPwaManifest({
+        name: 'Text Editor App',
+        short_name: 'TextEditor',
+        description: 'A progressive web application text editor.',
+        background_color: '#ffffff',
+        theme_color: '#000000',
+        start_url: '/',
+        display: 'standalone',
+        icons: [
+          {
+            src: path.resolve('src/assets/icon.png'),
+            sizes: [96, 128, 192, 256, 384, 512],
+            destination: path.join('assets', 'icons'),
+          },
+        ],
+      }),
+      // Inject the custom service worker
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'service-worker.js',
+      }),
     ],
-
     module: {
       rules: [
-        
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+            },
+          },
+        },
       ],
     },
   };
